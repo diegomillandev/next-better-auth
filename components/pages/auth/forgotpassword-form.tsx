@@ -15,8 +15,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ForgotPasswordSchema } from "@/schemas/auth-schemas";
 import { ForgotPasswordData } from "@/types/auth-types";
+import { forgetPassword } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ForgotPasswordForm() {
+  const [success, setSuccess] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -25,8 +31,20 @@ export default function ForgotPasswordForm() {
     resolver: zodResolver(ForgotPasswordSchema),
   });
 
-  const onSubmit = (data: ForgotPasswordData) => {
-    console.log(data);
+  const onSubmit = async (formData: ForgotPasswordData) => {
+    const { email } = formData;
+    try {
+      const { error } = await forgetPassword({ email });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Password reset instructions sent to your email.");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -39,38 +57,56 @@ export default function ForgotPasswordForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2 relative">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="millan@example.com"
-                  className="placeholder:text-foreground/30"
-                  {...register("email")}
-                  required
-                  autoFocus
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-600 absolute -bottom-5">
-                    {errors.email.message}
-                  </p>
-                )}
+          {!success ? (
+            <form
+              noValidate
+              autoComplete="off"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className="flex flex-col gap-6">
+                <div className="grid gap-2 relative">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="millan@example.com"
+                    className="placeholder:text-foreground/30"
+                    {...register("email")}
+                    required
+                    autoFocus
+                  />
+                  {errors.email && (
+                    <p className="text-sm text-red-600 absolute -bottom-5">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-3 mt-1">
+                  <Button type="submit" className="w-full">
+                    Sign In
+                  </Button>
+                </div>
               </div>
-              <div className="flex flex-col gap-3 mt-1">
-                <Button type="submit" className="w-full">
+              <div className="mt-4 text-center text-sm">
+                Remember your password?{" "}
+                <Link href="/sign-in" className="underline underline-offset-4">
                   Sign In
-                </Button>
+                </Link>
               </div>
+            </form>
+          ) : (
+            <div className="space-y-4">
+              <Alert>
+                <AlertDescription>
+                  Password reset instructions have been sent to your email if it
+                  exists in our system.
+                </AlertDescription>
+              </Alert>
+              <Button asChild className="w-full" variant={"outline"}>
+                <Link href="/sign-in">Back to Sign In</Link>
+              </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Remember your password?{" "}
-              <Link href="/sign-in" className="underline underline-offset-4">
-                Sign In
-              </Link>
-            </div>
-          </form>
+          )}
         </CardContent>
       </Card>
     </div>
