@@ -3,16 +3,28 @@
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import { useSession } from "@/lib/auth-client";
 import { ArrowLeftToLine } from "lucide-react";
+import DashboardSkeleton from "./dashboard-skeleton";
 
 export const Dashboard = () => {
+  const { data: session, isPending } = useSession();
+
+  if (isPending) {
+    return <DashboardSkeleton />;
+  }
+
+  if (!session) {
+    return null;
+  }
+
   const handleSignOut = () => {
     // Logic to sign out the user
     console.log("User signed out");
@@ -28,13 +40,13 @@ export const Dashboard = () => {
           <div className="flex mb-4 items-center gap-x-2">
             <h3 className="font-semibold">Name:</h3>
             <p className="text-sm font-medium text-muted-foreground">
-              John Doe
+              {session?.user?.name}
             </p>
           </div>
           <div className="flex mb-4 items-center gap-x-2">
             <h3 className="font-semibold">Email:</h3>
             <p className="text-sm font-medium text-muted-foreground">
-              correo@correo.com
+              {session?.user?.email}
             </p>
           </div>
         </CardContent>
