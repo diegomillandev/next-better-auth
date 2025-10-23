@@ -14,10 +14,10 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-3">
           <Button asChild>
-            <Link href="/signin">Sign In</Link>
+            <Link href="/sign-in">Sign In</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/signup">Sign Up</Link>
+            <Link href="/sign-up">Sign Up</Link>
           </Button>
           <Button variant="secondary" asChild>
             <Link href="/dashboard">Dashboard(Protected)</Link>
