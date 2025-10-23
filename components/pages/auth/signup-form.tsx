@@ -16,8 +16,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpSchema } from "@/schemas/auth-schemas";
 import { SignUpData } from "@/types/auth-types";
 import { MessageError } from "@/components/shared/message-error";
+import { signUp } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignUpForm() {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -26,8 +31,24 @@ export default function SignUpForm() {
     resolver: zodResolver(SignUpSchema),
   });
 
-  const onSubmit = (data: SignUpData) => {
-    console.log(data);
+  const onSubmit = async (formData: SignUpData) => {
+    const { name, email, password } = formData;
+
+    try {
+      const { data, error } = await signUp.email({
+        email,
+        password,
+        name,
+      });
+
+      if (error) {
+        toast.error(error.message || "Something went wrong during sign up.");
+        return;
+      }
+
+      toast.success("Account created successfully! Please check your email.");
+      router.push("/sign-in");
+    } catch (error) {}
   };
 
   return (
