@@ -17,21 +17,44 @@ import { SignInSchema } from "@/schemas/auth-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignInData } from "@/types/auth-types";
 import { MessageError } from "@/components/shared/message-error";
+import { toast } from "sonner";
+import { signIn } from "@/lib/auth-client";
+import { Eye, EyeClosed } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function SignInForm() {
-  const [error, setError] = useState<string | null>(null);
+  const [showingPassword, setShowingPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(SignInSchema),
   });
 
   const onSubmit = async (data: SignInData) => {
-    console.log("Form submitted:", data);
+    const { email, password } = data;
+    try {
+      const { data, error } = await signIn.email({
+        email,
+        password,
+      });
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.success("Successfully signed in!");
+      router.push("/dashboard");
+      reset();
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,14 +94,26 @@ export default function SignInForm() {
                     Forgot your password?
                   </Link>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  className="placeholder:text-foreground/30"
-                  {...register("password")}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    className="placeholder:text-foreground/30"
+                    id="password"
+                    type={showingPassword ? "text" : "password"}
+                    {...register("password")}
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0 h-auto w-auto cursor-pointer transition-all"
+                    onClick={() => setShowingPassword((prev) => !prev)}
+                  >
+                    {showingPassword ? (
+                      <Eye size={20} />
+                    ) : (
+                      <EyeClosed size={20} />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <MessageError
                     message={errors.password?.message?.toString()}
@@ -86,7 +121,7 @@ export default function SignInForm() {
                 )}
               </div>
               <div className="flex flex-col gap-3 mt-1">
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full" disabled={isLoading}>
                   Sign In
                 </Button>
               </div>
