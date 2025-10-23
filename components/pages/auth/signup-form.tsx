@@ -19,8 +19,11 @@ import { MessageError } from "@/components/shared/message-error";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Eye, EyeClosed, icons } from "lucide-react";
 
 export default function SignUpForm() {
+  const [showingPassword, setShowingPassword] = useState(false);
   const router = useRouter();
 
   const {
@@ -50,7 +53,9 @@ export default function SignUpForm() {
       toast.success("Account created successfully! Please check your email.");
       reset();
       router.push("/sign-in");
-    } catch (error) {}
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
@@ -94,13 +99,26 @@ export default function SignUpForm() {
               </div>
               <div className="grid gap-2 relative">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  className="placeholder:text-foreground/30"
-                  id="password"
-                  type="password"
-                  {...register("password")}
-                  placeholder="Enter your password"
-                />
+                <div className="relative">
+                  <Input
+                    className="placeholder:text-foreground/30"
+                    id="password"
+                    type={showingPassword ? "text" : "password"}
+                    {...register("password")}
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0 h-auto w-auto cursor-pointer transition-all"
+                    onClick={() => setShowingPassword((prev) => !prev)}
+                  >
+                    {showingPassword ? (
+                      <Eye size={20} />
+                    ) : (
+                      <EyeClosed size={20} />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <MessageError
                     message={errors.password?.message?.toString()}
@@ -109,13 +127,26 @@ export default function SignUpForm() {
               </div>
               <div className="grid gap-2 relative">
                 <Label htmlFor="password_confirmation">Confirm Password</Label>
-                <Input
-                  className="placeholder:text-foreground/30"
-                  id="password_confirmation"
-                  type="password"
-                  placeholder="Confirm your password"
-                  {...register("passwordConfirmation")}
-                />
+                <div className="relative">
+                  <Input
+                    className="placeholder:text-foreground/30"
+                    id="password_confirmation"
+                    type={showingPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    {...register("passwordConfirmation")}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0 h-auto w-auto cursor-pointer transition-all"
+                    onClick={() => setShowingPassword((prev) => !prev)}
+                  >
+                    {showingPassword ? (
+                      <Eye size={20} />
+                    ) : (
+                      <EyeClosed size={20} />
+                    )}
+                  </button>
+                </div>
                 {errors.passwordConfirmation && (
                   <MessageError
                     message={errors.passwordConfirmation?.message?.toString()}
