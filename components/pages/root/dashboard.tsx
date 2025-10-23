@@ -10,12 +10,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 import { ArrowLeftToLine } from "lucide-react";
 import DashboardSkeleton from "./dashboard-skeleton";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export const Dashboard = () => {
+  const router = useRouter();
   const { data: session, isPending } = useSession();
+
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/sign-in");
+    }
+  }, [isPending, session, router]);
 
   if (isPending) {
     return <DashboardSkeleton />;
@@ -25,9 +35,13 @@ export const Dashboard = () => {
     return null;
   }
 
-  const handleSignOut = () => {
-    // Logic to sign out the user
-    console.log("User signed out");
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push("/");
+    } catch (error) {
+      toast.error("Error signing out. Please try again.");
+    }
   };
   return (
     <div className="flex items-center justify-center h-screen">
