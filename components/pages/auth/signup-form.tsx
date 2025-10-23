@@ -27,6 +27,7 @@ export default function SignUpForm() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: zodResolver(SignUpSchema),
   });
@@ -47,6 +48,7 @@ export default function SignUpForm() {
       }
 
       toast.success("Account created successfully! Please check your email.");
+      reset();
       router.push("/sign-in");
     } catch (error) {}
   };
