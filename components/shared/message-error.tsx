@@ -3,5 +3,5 @@ type MessageErrorProps = {
 };
 
 export const MessageError = ({ message }: MessageErrorProps) => {
-  return <p className="text-xs text-primary">{message}</p>;
+  return <p className="text-xs absolute -bottom-4 text-red-600">{message}</p>;
 };

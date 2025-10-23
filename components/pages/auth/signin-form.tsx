@@ -46,13 +46,8 @@ export default function SignInForm() {
         <CardContent>
           <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
-              <div className="grid gap-3 relative">
-                <div className="flex justify-between">
-                  <Label htmlFor="email">Email</Label>
-                  {errors.email && (
-                    <MessageError message={errors.email?.message?.toString()} />
-                  )}
-                </div>
+              <div className="grid gap-2 relative">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -62,15 +57,19 @@ export default function SignInForm() {
                   required
                   autoFocus
                 />
+                {errors.email && (
+                  <MessageError message={errors.email?.message?.toString()} />
+                )}
               </div>
-              <div className="grid gap-3 relative">
+              <div className="grid gap-2 relative">
                 <div className="flex justify-between">
                   <Label htmlFor="password">Password</Label>
-                  {errors.password && (
-                    <MessageError
-                      message={errors.password?.message?.toString()}
-                    />
-                  )}
+                  <Link
+                    href="/forgot-password"
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
                 </div>
                 <Input
                   id="password"
@@ -80,10 +79,15 @@ export default function SignInForm() {
                   {...register("password")}
                   required
                 />
+                {errors.password && (
+                  <MessageError
+                    message={errors.password?.message?.toString()}
+                  />
+                )}
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 mt-1">
                 <Button type="submit" className="w-full">
-                  Login
+                  Sign In
                 </Button>
               </div>
             </div>
