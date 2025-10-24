@@ -17,6 +17,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import { ResetPasswordSchema } from "@/schemas/auth-schemas";
+import { toast } from "sonner";
+import { resetPassword } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 interface ResetPasswordFormProps {
   token?: string;
@@ -25,6 +28,7 @@ interface ResetPasswordFormProps {
 export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [showingPassword, setShowingPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -36,7 +40,27 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   });
 
   const onSubmit = async (formData: any) => {
-    console.log(formData);
+    const { password, passwordConfirmation } = formData;
+
+    try {
+      const { data, error } = await resetPassword({
+        newPassword: password,
+        token,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Your password has been reset successfully.");
+      reset();
+      setTimeout(() => {
+        router.push("/sign-in");
+      }, 1500);
+    } catch (error) {
+      toast.error("An error occurred while resetting the password.");
+    }
   };
 
   return (
