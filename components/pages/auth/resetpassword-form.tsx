@@ -40,7 +40,8 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   });
 
   const onSubmit = async (formData: any) => {
-    const { password, passwordConfirmation } = formData;
+    const { password } = formData;
+    setIsLoading(true);
 
     try {
       const { data, error } = await resetPassword({
@@ -58,8 +59,10 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       setTimeout(() => {
         router.push("/sign-in");
       }, 1500);
+      setIsLoading(false);
     } catch (error) {
       toast.error("An error occurred while resetting the password.");
+      setIsLoading(false);
     }
   };
 
