@@ -12,6 +12,9 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: false,
+    sendResetPassword: async ({ user, url }) => {
+      console.log(`Send email to ${user.email} with this link: ${url}`);
+    },
   },
   plugins: [nextCookies()],
 });

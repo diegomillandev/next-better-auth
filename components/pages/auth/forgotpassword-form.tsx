@@ -34,7 +34,10 @@ export default function ForgotPasswordForm() {
   const onSubmit = async (formData: ForgotPasswordData) => {
     const { email } = formData;
     try {
-      const { error } = await forgetPassword({ email });
+      const { error } = await forgetPassword({
+        email,
+        redirectTo: "/reset-password",
+      });
 
       if (error) {
         toast.error(error.message);
@@ -42,6 +45,7 @@ export default function ForgotPasswordForm() {
       }
 
       toast.success("Password reset instructions sent to your email.");
+      setSuccess(true);
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     }
